@@ -4,5 +4,6 @@ void read_launch_parameters() {
   pinMode(5, INPUT_PULLUP);
   pinMode(6, INPUT_PULLUP);
 
-  serial_communication_enable=digitalRead(3);
+  serial_communication_enable = !digitalRead(3);
+  motor_ena(!digitalRead(4));                        //включение двигателей
 }
