@@ -79,7 +79,7 @@ void loop() {
   }
 
 
-  if (current_millis - last_serial_recive_time > 200000) {
+  if (current_millis - last_serial_recive_time > 100) {
     serial_connect_error();
   }
 
