@@ -24,8 +24,9 @@ void setup() {
   delay(100);
   noToneAC();      // Выключить звук
 
+  pinMode(A0, INPUT);
 
-  
+
   Serial.begin(115200);                       // открываем порт для связи с ПК
   radio.begin();                            //активировать модуль
   radio.setAutoAck(1);                      // режим подтверждения приёма, 1 вкл 0 выкл
@@ -79,7 +80,7 @@ void loop() {
 
 
     String outgoing_serial_data = " {\"rd\": ["  + String(recieved_data[0]) + "," + String(recieved_data[1]) + "," + String(recieved_data[2]) + "]}";
-    Serial.println(outgoing_serial_data);
+    // Serial.println(outgoing_serial_data);
 
 
   }
@@ -96,6 +97,10 @@ void loop() {
 
   //вызов функции двигалей
   motor(recieved_data[2], recieved_data[1]);
+
+
+  
+  //Serial.println(getOnBoardBatteryCharge(analogRead(A0)));
 
 
 }
