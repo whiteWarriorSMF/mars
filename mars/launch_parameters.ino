@@ -19,11 +19,12 @@ void read_launch_parameters() {
 
 
 void set_launch_parameters() {
-  
+
   digitalWrite(47, motor_enable);          //запуск двигателей (НЕ РАБОТАЕТ)
-  
+
   if (radio_communication_enable == 0) {   //запуск радиомодуля
     set_zero_radio_date();
   }
-  
+
+
 }

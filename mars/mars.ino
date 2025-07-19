@@ -26,7 +26,8 @@ bool motor_enable;
 void setup() {
   read_launch_parameters();
   set_launch_parameters();
-
+  set_radio_config();
+  
   //контрольный звук
   toneAC(4000);    // Включить тон 440 Гц
   delay(100);
@@ -37,7 +38,6 @@ void setup() {
 
   Serial.begin(115200);                       // открываем порт для связи с ПК
 
-  set_radio_config();
 
 }
 
