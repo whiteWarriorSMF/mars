@@ -39,4 +39,11 @@ void voltage_error() {
 
 
 void low_voltage_error() {
+    if (current_millis - radio_error_delay_counter > 100) {
+    toneAC(5000);  // Включить тон 440 Гц
+  }
+  if (current_millis - radio_error_delay_counter > 200) {
+    noToneAC();   // Выключить звук
+    radio_error_delay_counter = current_millis;
+  }
 }

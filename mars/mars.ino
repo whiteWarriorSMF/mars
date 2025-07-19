@@ -105,7 +105,9 @@ void loop() {
   if (current_millis - last_serial_recive_time > 1000000 && serial_communication_enable == 1) {
     serial_connect_error();
   }
-
+  if (((getOnBoardBatteryCharge() / 100) < 9.3)||((getRideBatteryCharge() / 100) < 9.3)) {
+    low_voltage_error();
+  }
   //***********ОБРАБОТЧИК ОШИБОК*********************
 
 
