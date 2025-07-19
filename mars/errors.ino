@@ -15,6 +15,7 @@ void radio_error() {
 
 }
 
+
 void serial_connect_error() {
   if (current_millis - serial_connect_error_delay_counter > 400 && current_millis - serial_connect_error_delay_counter < 500) {
     toneAC(3000);  // Включить тон 440 Гц

@@ -23,9 +23,9 @@ void motor_init() {
 }
 
 
-void motor_ena(bool state) {
-  digitalWrite(47, state);
-}
+
+  
+
 
 
 void motor(int x, int y) {

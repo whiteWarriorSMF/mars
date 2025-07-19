@@ -15,16 +15,20 @@ unsigned long last_radio_recive_time;                                       //с
 unsigned long last_serial_recive_time;
 
 bool serial_communication_enable;
+bool radio_communication_enable;
+bool motor_enable;
+
 
 void setup() {
   read_launch_parameters();
+  set_launch_parameters();
 
   //контрольный звук
   toneAC(4000);    // Включить тон 440 Гц
   delay(100);
   noToneAC();      // Выключить звук
 
-  pinMode(A0, INPUT);
+
 
 
   Serial.begin(115200);                       // открываем порт для связи с ПК
@@ -51,7 +55,7 @@ void loop() {
 
 
   byte pipeNo;
-  while ( radio.available(&pipeNo)) {
+  while ( radio.available(&pipeNo) && radio_communication_enable == 1) {
     radio.read(&recieved_data, sizeof(recieved_data));
     last_radio_recive_time = current_millis;
     noToneAC();   // Выключить звук
@@ -67,27 +71,21 @@ void loop() {
 
 
   if (serial_communication_enable == 1) {
-
-
     if (Serial.available() > 0) {  //если есть доступные данные
       last_serial_recive_time = current_millis;
       String command = Serial.readStringUntil('\n');
     }
-
     if (current_millis - last_serial_recive_time > 100) {
       serial_connect_error();
     }
-
-
     String outgoing_serial_data = " {\"rd\": ["  + String(recieved_data[0]) + "," + String(recieved_data[1]) + "," + String(recieved_data[2]) + "]}";
     // Serial.println(outgoing_serial_data);
-
-
   }
 
 
+
   //вызов ошибки потери радио сигнала
-  if (current_millis - last_radio_recive_time > 100) {
+  if (current_millis - last_radio_recive_time > 100 && radio_communication_enable == 1) {
     radio_error();
   }
 
@@ -99,8 +97,8 @@ void loop() {
   motor(recieved_data[2], recieved_data[1]);
 
 
-  
-  //Serial.println(getOnBoardBatteryCharge(analogRead(A0)));
+
+  Serial.println(radio_communication_enable);
 
 
 }
