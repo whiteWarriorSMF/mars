@@ -27,7 +27,7 @@ void setup() {
   read_launch_parameters();
   set_launch_parameters();
   set_radio_config();
-  
+
   //контрольный звук
   toneAC(4000);    // Включить тон 440 Гц
   delay(100);
@@ -50,12 +50,18 @@ void loop() {
 
 
   //********************РАДИО***************************
-
-  byte pipeNo;
-  while ( radio.available(&pipeNo) && radio_communication_enable == 1) {
-    radio.read(&recieved_data, sizeof(recieved_data));
-    last_radio_recive_time = current_millis;
-    noToneAC();   // Выключить звук
+  if (radio_communication_enable == 1) {
+    byte pipeNo;
+    while ( radio.available(&pipeNo) ) {
+      radio.read(&recieved_data, sizeof(recieved_data));
+      last_radio_recive_time = current_millis;
+      noToneAC();   // Выключить звук
+      if (recieved_data[0] == 0) {
+        set_zero_radio_date();
+        break;
+        
+      }
+    }
   }
 
   //********************РАДИО***************************
@@ -92,11 +98,11 @@ void loop() {
   //***********ОБРАБОТЧИК ОШИБОК*********************
 
   //вызов ошибки потери радио сигнала
-  if (current_millis - last_radio_recive_time > 100 && radio_communication_enable == 1) {
+  if ((current_millis - last_radio_recive_time > 100 || recieved_data[0] == 0) && radio_communication_enable == 1) {
     radio_error();
   }
   //вызов ошибки потери последовательной связи
-  if (current_millis - last_serial_recive_time > 100 && serial_communication_enable == 1) {
+  if (current_millis - last_serial_recive_time > 1000000 && serial_communication_enable == 1) {
     serial_connect_error();
   }
 
@@ -107,7 +113,6 @@ void loop() {
 
 
 
-  Serial.println(radio_communication_enable);
 
 
 }
