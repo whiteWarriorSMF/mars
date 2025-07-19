@@ -1,25 +1,10 @@
 
 //******************************ПОЛИНОМ ЗНАЧЕНИЙ ДЛЯ БОРТОВОГО АКБ************************
 
-const int OnBoardBatteryAdcPoints[] = {0, 205, 410, 615, 820, 1023};  // Пример измеренных значений АЦП
-const float OnBoardBatteryVoltagePoints[] = {0.0, 5.0, 7.5, 9.8, 11.2, 12.6}; // Реальные напряжения
-const int OnBoardBatteryNumPoints = sizeof(OnBoardBatteryAdcPoints) / sizeof(OnBoardBatteryAdcPoints[0]);
-// Функция полиномиальной аппроксимации
+
 float getOnBoardBatteryCharge(int rawADC) {
-  // Поиск ближайших точек для интерполяции
-  int idx = 0;
-  while (idx < OnBoardBatteryNumPoints - 1 && OnBoardBatteryAdcPoints[idx + 1] < rawADC) {
-    idx++;
-  }
-  // Если вышли за пределы - возвращаем крайние значения
-  if (idx == OnBoardBatteryNumPoints - 1) return OnBoardBatteryVoltagePoints[OnBoardBatteryNumPoints - 1];
-  if (idx == 0 && rawADC <= OnBoardBatteryAdcPoints[0]) return OnBoardBatteryVoltagePoints[0];
-  // Линейная интерполяция между точками
-  float adc0 = OnBoardBatteryAdcPoints[idx];
-  float adc1 = OnBoardBatteryAdcPoints[idx + 1];
-  float v0 = OnBoardBatteryVoltagePoints[idx];
-  float v1 = OnBoardBatteryVoltagePoints[idx + 1];
-  return v0 + (v1 - v0) * (rawADC - adc0) / (adc1 - adc0);
+  float voltage = map(rawADC, 0, 999, 0, 1230);
+  return voltage / 100;
 }
 
 //******************************ПОЛИНОМ ЗНАЧЕНИЙ ДЛЯ БОРТОВОГО АКБ************************
@@ -29,26 +14,10 @@ float getOnBoardBatteryCharge(int rawADC) {
 
 //******************************ПОЛИНОМ ЗНАЧЕНИЙ ДЛЯ ХОДОВОГО АКБ************************
 
-// Калибровочные данные: значения АЦП и соответствующие напряжения
-const int rideBatteryAdcPoints[] = {0, 205, 410, 615, 820, 1023};  // Пример измеренных значений АЦП
-const float rideBatteryVoltagePoints[] = {0.0, 5.0, 7.5, 9.8, 11.2, 12.6}; // Реальные напряжения
-const int rideBatteryNumPoints = sizeof(rideBatteryAdcPoints) / sizeof(rideBatteryAdcPoints[0]);
-// Функция полиномиальной аппроксимации
-float rideBatteryAdcToVoltage(int rawADC) {
-  // Поиск ближайших точек для интерполяции
-  int idx = 0;
-  while (idx < rideBatteryNumPoints - 1 && rideBatteryAdcPoints[idx + 1] < rawADC) {
-    idx++;
-  }
-  // Если вышли за пределы - возвращаем крайние значения
-  if (idx == rideBatteryNumPoints - 1) return rideBatteryVoltagePoints[rideBatteryNumPoints - 1];
-  if (idx == 0 && rawADC <= rideBatteryAdcPoints[0]) return rideBatteryVoltagePoints[0];
-  // Линейная интерполяция между точками
-  float adc0 = rideBatteryAdcPoints[idx];
-  float adc1 = rideBatteryAdcPoints[idx + 1];
-  float v0 = rideBatteryVoltagePoints[idx];
-  float v1 = rideBatteryVoltagePoints[idx + 1];
-  return v0 + (v1 - v0) * (rawADC - adc0) / (adc1 - adc0);
+
+float getRideBatteryCharge(int rawADC) {
+  float voltage = map(rawADC, 0, 999, 0, 1210);
+  return voltage / 100;
 }
 
 //******************************ПОЛИНОМ ЗНАЧЕНИЙ ДЛЯ ХОДОВОГО АКБ************************
@@ -95,7 +64,7 @@ String check_voltage() {
   pinMode(A1, INPUT);
   pinMode(A2, INPUT);
   String Sdata = String(getOnBoardBatteryCharge(analogRead(A0))) + " "
-                 + String(getOnBoardBatteryCharge(analogRead(A1))) + " "
+                 + String(getRideBatteryCharge(analogRead(A1))) + " "
                  + String(getRadioModuleVoltageConvertorVoltage(analogRead(A2)));
 
   return Sdata;
