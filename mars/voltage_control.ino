@@ -65,7 +65,7 @@ const float radioModuleVoltageConvertorVoltagePoints[] = {0.0, 1.0, 3.3}; // Р�
 const int radioModuleVoltageConvertorNumPoints = sizeof(radioModuleVoltageConvertorAdcPoints) / sizeof(radioModuleVoltageConvertorAdcPoints[0]);
 
 // Функция полиномиальной аппроксимации
-float adcToVoltage(int rawADC) {
+float getRadioModuleVoltageConvertorVoltage(int rawADC) {
   // Поиск ближайших точек для интерполяции
   int idx = 0;
   while (idx < radioModuleVoltageConvertorNumPoints - 1 && radioModuleVoltageConvertorAdcPoints[idx + 1] < rawADC) {
@@ -90,9 +90,14 @@ float adcToVoltage(int rawADC) {
 
 
 
-void check_voltage() {
+String check_voltage() {
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  String Sdata = String(getOnBoardBatteryCharge(analogRead(A0))) + " "
+                 + String(getOnBoardBatteryCharge(analogRead(A1))) + " "
+                 + String(getRadioModuleVoltageConvertorVoltage(analogRead(A2)));
 
-
-
+  return Sdata;
 
 }

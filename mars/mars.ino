@@ -59,7 +59,6 @@ void loop() {
       if (recieved_data[0] == 0) {
         set_zero_radio_date();
         break;
-        
       }
     }
   }
@@ -76,8 +75,9 @@ void loop() {
       last_serial_recive_time = current_millis;
       String command = Serial.readStringUntil('\n');
     }
-    String outgoing_serial_data = " {\"rd\": ["  + String(recieved_data[0]) + "," + String(recieved_data[1]) + "," + String(recieved_data[2]) + "]}";
-    Serial.println(outgoing_serial_data);
+    String outgoing_serial_data = "radioData "  + String(recieved_data[0]) + " " + String(recieved_data[1]) + " " + String(recieved_data[2]) + "\n";
+    outgoing_serial_data += "voltage " + check_voltage() + "\n";
+    Serial.print(outgoing_serial_data);
   }
 
   //*******************ПОСЛЕДОВАТЕЛЬНЫЙ ПОРТ********************************
