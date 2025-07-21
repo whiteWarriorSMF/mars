@@ -11,11 +11,12 @@ int recieved_data[3];  // массив принятых данных
 byte address[][6] = {"1Node", "2Node", "3Node", "4Node", "5Node", "6Node"}; //возможные номера труб
 
 
-unsigned long current_millis;                                               //счётчик времени с запуска
-unsigned long last_radio_recive_time;                                       //счётчик времени с последнего приёма радиосигнала
-unsigned long last_serial_recive_time;
-
-
+unsigned long current_millis;            //счётчик времени с запуска
+unsigned long long current_micros;       //счётчик времени с запуска
+unsigned long last_radio_recive_time;    //счётчик времени с последнего приёма радиосигнала
+unsigned long last_serial_recive_time;   //счётчик времени с последнего приёма радиосигнала
+unsigned long long cicle_micros;         //счётчик времени с последнего прохождения цикла
+unsigned long cicle_time;   //счётчик времени с последнего приёма радиосигнала
 
 bool serial_communication_enable;
 bool radio_communication_enable;
@@ -42,10 +43,7 @@ void setup() {
 }
 
 void loop() {
-
-
-
-
+  current_micros = micros();
   current_millis = millis();          // обновление счётчика времени
 
 
@@ -62,7 +60,6 @@ void loop() {
       }
     }
   }
-
   //********************РАДИО***************************
 
 
@@ -74,10 +71,13 @@ void loop() {
     if (Serial.available() > 0) {  //если есть доступные данные
       last_serial_recive_time = current_millis;
       String command = Serial.readStringUntil('\n');
+
+      String outgoing_serial_data = "radioData "  + String(recieved_data[0]) + " " + String(recieved_data[1]) + " " + String(recieved_data[2]) + "\n";
+      outgoing_serial_data += "voltage " + check_voltage() + "\n";
+      outgoing_serial_data += "cps " + String(1000000/cicle_time) + "\n";
+      Serial.print(outgoing_serial_data);
+      //  Serial.println(command);
     }
-    String outgoing_serial_data = "radioData "  + String(recieved_data[0]) + " " + String(recieved_data[1]) + " " + String(recieved_data[2]) + "\n";
-    outgoing_serial_data += "voltage " + check_voltage() + "\n";
-    Serial.print(outgoing_serial_data);
   }
 
   //*******************ПОСЛЕДОВАТЕЛЬНЫЙ ПОРТ********************************
@@ -102,10 +102,10 @@ void loop() {
     radio_error();
   }
   //вызов ошибки потери последовательной связи
-  if (current_millis - last_serial_recive_time > 1000000 && serial_communication_enable == 1) {
+  if (current_millis - last_serial_recive_time > 10000000 && serial_communication_enable == 1) {
     serial_connect_error();
   }
-  if (((getOnBoardBatteryCharge() / 100) < 9.3)||((getRideBatteryCharge() / 100) < 9.3)) {
+  if (((getOnBoardBatteryCharge() / 100) < 9.3) || ((getRideBatteryCharge() / 100) < 9.3)) {
     low_voltage_error();
   }
   //***********ОБРАБОТЧИК ОШИБОК*********************
@@ -115,6 +115,6 @@ void loop() {
 
 
 
-
-
+  cicle_time = current_micros - cicle_micros;
+  cicle_micros = current_micros;
 }
